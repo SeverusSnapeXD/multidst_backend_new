@@ -56,7 +56,7 @@ async def analyze(request: P_Values):
     methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Q value']
     res = multitest(number_list, alpha=request.alpha)
     sig_indices = [res['Bonferroni'], res['Holm'], res['SGoF'], res['BH'], res['BY'], res['Q-value']]
-    sigindex_plot(methods, sig_indices, title=None, save_plot=True, timestamp=ts, plot_show=False)
+    sigindex_plot(methods, sig_indices, title="Significant Index Plot (SIP)", save_plot=True, timestamp=ts, plot_show=False)
     
     # Carry out MultiDST for a list of p_values
     res = multitest(number_list, alpha=request.alpha, sigplot=False)
