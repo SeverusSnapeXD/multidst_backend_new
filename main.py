@@ -50,26 +50,33 @@ async def analyze(request: P_Values):
 
     # Histogram
     g2_index = []
-    multidst_hist(number_tuple, g2_index, title="Histogram of p-values", col1='skyblue', col2='purple', save_plot=True, timestamp=ts, plot_show=False)
+    multidst_hist(number_list, g2_index, title="Histogram of p-values", col1='skyblue', col2='purple', save_plot=True, timestamp=ts, plot_show=False)
 
     # Significance plot
     methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Q value']
-    res = multitest(number_tuple, alpha=request.alpha)
+    res = multitest(number_list, alpha=request.alpha)
     sig_indices = [res['Bonferroni'], res['Holm'], res['SGoF'], res['BH'], res['BY'], res['Q-value']]
     sigindex_plot(methods, sig_indices, title=None, save_plot=True, timestamp=ts, plot_show=False)
     
     # Carry out MultiDST for a list of p_values
-    res = multitest(number_tuple, alpha=request.alpha, sigplot=False)
+    res = multitest(number_list, alpha=request.alpha, sigplot=False)
     if isinstance(res, dict):
+        bonf_p = res['Bonferroni']
+        holm_p = res['Holm']
+        sgof_p = res['SGoF']
+        bh_p = res['BH']
+        by_p = res['BY']
+        storey_q = res['Q-value']
         return {
-            "Bonferroni": res["Bonferroni"],
-            "Holm": res["Holm"],
-            "SGoF": res["SGoF"],
-            "BH": res["BH"],
-            "BY": res["BY"],
-            "Q-value": res["Q-value"],
+            "Bonferroni": [number_list[i] for i in bonf_p],
+            "Holm": [number_list[i] for i in holm_p],
+            "SGoF": [number_list[i] for i in sgof_p],
+            "BH": [number_list[i] for i in bh_p],
+            "BY": [number_list[i] for i in by_p],
+            "Q-value": [number_list[i] for i in storey_q],
             "sigindexplot": f"sigplot{ts}",
             "hist": f"hist{ts}"
+
         }
     else:
         return {"error": "Unexpected result format from multitest"}
