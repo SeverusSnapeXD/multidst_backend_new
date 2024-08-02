@@ -4,7 +4,7 @@ from multidst.functions import multitest
 from multidst.utils.visualization import multidst_hist , sigindex_plot
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-
+import os
 import time 
 class P_Values(BaseModel):
     p_values: str
@@ -22,8 +22,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Ensure the images directory exists
+images_dir = "images"
+if not os.path.exists(images_dir):
+    os.makedirs(images_dir)
+
 # Serve the images directory
-app.mount("/images", StaticFiles(directory="images"), name="images")
+app.mount("/images",StaticFiles(directory=images_dir), name="images")
 
 # to run the uvicorn dev server uvicorn api:app
 @app.get("/")
@@ -45,13 +50,13 @@ async def analyze(request: P_Values):
 
     # Histogram
     g2_index = []
-    multidst_hist(number_tuple, g2_index, title="Histogram of p-values", col1='skyblue', col2='purple', save_plot=True, timestamp=ts)
+    multidst_hist(number_tuple, g2_index, title="Histogram of p-values", col1='skyblue', col2='purple', save_plot=True, timestamp=ts, plot_show=False)
 
     # Significance plot
     methods = ['Bonferroni', 'Holm', 'SGoF', 'BH', 'BY', 'Q value']
     res = multitest(number_tuple, alpha=request.alpha)
     sig_indices = [res['Bonferroni'], res['Holm'], res['SGoF'], res['BH'], res['BY'], res['Q-value']]
-    sigindex_plot(methods, sig_indices, title=None, save_plot=True, timestamp=ts)
+    sigindex_plot(methods, sig_indices, title=None, save_plot=True, timestamp=ts, plot_show=False)
     
     # Carry out MultiDST for a list of p_values
     res = multitest(number_tuple, alpha=request.alpha, sigplot=False)
