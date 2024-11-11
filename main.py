@@ -57,6 +57,34 @@ async def analyze(request: P_Values):
     res = multitest(number_list, alpha=request.alpha)
     sig_indices = [res['Bonferroni'], res['Holm'], res['SGoF'], res['BH'], res['BY'], res['Q-value']]
     sigindex_plot(methods, sig_indices, title="Significant Index Plot (SIP)", save_plot=True, timestamp=ts, plot_show=False)
+
+    #top_10
+    ascending_order_number_list = sorted(number_list)
+    ascending_order_number_list_10=ascending_order_number_list[0:10]
+    ascending_order_number_list_10_indices=[number_list.index(num) for num in ascending_order_number_list_10]
+    ascending_order_number_list_methods=[]
+    for i in ascending_order_number_list_10_indices:
+        detected_methods=[]
+        if i in res['Bonferroni']:
+            detected_methods.append("Boneferroni")
+        if i in res['Holm']:
+            detected_methods.append("Holm")
+        if i in res['SGoF']:
+            detected_methods.append("SGoF")
+        if i in res['BH']:
+            detected_methods.append("BH")
+        if i in res['BY']:
+            detected_methods.append("BY")
+        if i in res['Q-value']:
+            detected_methods.append("Q-value")
+        ascending_order_number_list_methods.append(detected_methods)
+
+
+
+        
+    
+
+
     
     # Carry out MultiDST for a list of p_values
     res = multitest(number_list, alpha=request.alpha, sigplot=False)
@@ -75,7 +103,9 @@ async def analyze(request: P_Values):
             "BY": [number_list[i] for i in by_p],
             "Q-value": [number_list[i] for i in storey_q],
             "sigindexplot": f"sigplot{ts}",
-            "hist": f"hist{ts}"
+            "hist": f"hist{ts}",
+            "top10indices":ascending_order_number_list,
+            "top10methods":ascending_order_number_list_methods
 
         }
     else:
