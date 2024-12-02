@@ -66,7 +66,7 @@ async def analyze(request: P_Values):
     for i in ascending_order_number_list_10_indices:
         detected_methods=[]
         if i in res['Bonferroni']:
-            detected_methods.append("Boneferroni")
+            detected_methods.append("Bonferroni")
         if i in res['Holm']:
             detected_methods.append("Holm")
         if i in res['SGoF']:
@@ -78,11 +78,6 @@ async def analyze(request: P_Values):
         if i in res['Q-value']:
             detected_methods.append("Q-value")
         ascending_order_number_list_methods.append(detected_methods)
-
-
-
-        
-    
 
 
     
